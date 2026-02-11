@@ -39,6 +39,7 @@ export default function LoginPage() {
     const handleRegister = async () => {
         setError("");
         try {
+            console.log("Attempting to register with API URL:", process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
             await api.post("/users/", {
                 username,
                 email: `${username}@example.com`, // Simplified for MVP
@@ -55,7 +56,15 @@ export default function LoginPage() {
             router.push("/timer");
         } catch (err: any) {
             console.error(err);
-            setError(err.response?.data?.detail || "Registration failed. Please try again.");
+            let errorMessage = "Registration failed. Please try again.";
+
+            if (err.code === "ERR_NETWORK") {
+                errorMessage = `Unable to connect to server. Trying to connect to: ${process.env.NEXT_PUBLIC_API_URL || "localhost:8000"}`;
+            } else if (err.response) {
+                errorMessage = err.response.data?.detail || errorMessage;
+            }
+
+            setError(errorMessage);
         }
     };
 
