@@ -1,0 +1,102 @@
+
+> frontend@0.1.0 lint
+> eslint
+
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/dashboard/page.tsx
+  120:68  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/login/page.tsx
+  33:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/settings/timer/page.tsx
+  26:26  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/settings/timer/page.tsx:26:26
+  24 |         const storedDisabled = localStorage.getItem("flowstate-disabled-tracks");
+  25 |
+> 26 |         if (storedFocus) setFocusDuration(parseInt(storedFocus) / 60);
+     |                          ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  27 |         if (storedBreak) setBreakDuration(parseInt(storedBreak) / 60);
+  28 |         if (storedDisabled) setDisabledTracks(JSON.parse(storedDisabled));
+  29 |  react-hooks/set-state-in-effect
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/timer/page.tsx
+  117:12  warning  'showSettings' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  117:26  warning  'setShowSettings' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  198:13  error    Error: Cannot access variable before it is declared
+
+`handleFinish` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/timer/page.tsx:198:13
+  196 |         } else if (timeLeft === 0 && isActive) {
+  197 |             // Timer finished naturally
+> 198 |             handleFinish(false);
+      |             ^^^^^^^^^^^^ `handleFinish` accessed before it is declared
+  199 |         }
+  200 |
+  201 |         return () => clearInterval(interval);
+
+/Users/ojimahayato/myproject/flowstate/frontend/app/timer/page.tsx:204:5
+  202 |     }, [isActive, timeLeft]);
+  203 |
+> 204 |     const handleFinish = async (early: boolean = false) => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 205 |         setIsActive(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 206 |
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 232 |         }
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 233 |     };
+      | ^^^^^^^ `handleFinish` is declared here
+  234 |
+  235 |     const handleCompleteSession = async () => {
+  236 |         const completedDuration = finishingStatus === "PARTIAL"  react-hooks/immutability
+  202:8   warning  React Hook useEffect has a missing dependency: 'handleFinish'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+  306:8   warning  React Hook useEffect has a missing dependency: 'playlist.length'. Either include it or remove the dependency array. You can also replace multiple useState variables with useReducer if 'setCurrentTrackIndex' needs the current value of 'playlist.length'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  467:26  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react/no-unescaped-entities
+
+/Users/ojimahayato/myproject/flowstate/frontend/components/CategorySelect.tsx
+  41:9  error    Error: Cannot access variable before it is declared
+
+`fetchCategories` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/ojimahayato/myproject/flowstate/frontend/components/CategorySelect.tsx:41:9
+  39 |
+  40 |     useEffect(() => {
+> 41 |         fetchCategories();
+     |         ^^^^^^^^^^^^^^^ `fetchCategories` accessed before it is declared
+  42 |     }, []);
+  43 |
+  44 |     const fetchCategories = async () => {
+
+/Users/ojimahayato/myproject/flowstate/frontend/components/CategorySelect.tsx:44:5
+  42 |     }, []);
+  43 |
+> 44 |     const fetchCategories = async () => {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |         try {
+     | ^^^^^^^^^^^^^
+> 46 |             const res = await api.get("/categories/");
+     …
+     | ^^^^^^^^^^^^^
+> 53 |         }
+     | ^^^^^^^^^^^^^
+> 54 |     };
+     | ^^^^^^^ `fetchCategories` is declared here
+  55 |
+  56 |     const resetForm = () => {
+  57 |         setCategoryName("");  react-hooks/immutability
+  42:8  warning  React Hook useEffect has a missing dependency: 'fetchCategories'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+✖ 12 problems (7 errors, 5 warnings)
+
