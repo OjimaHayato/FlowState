@@ -61,10 +61,17 @@ export default function LoginPage() {
             if (err.code === "ERR_NETWORK") {
                 errorMessage = `Unable to connect to server. Trying to connect to: ${process.env.NEXT_PUBLIC_API_URL || "localhost:8000"}`;
             } else if (err.response) {
-                errorMessage = err.response.data?.detail || errorMessage;
+                // Handle 422 Validation Errors (FastAPI returns an array of objects)
+                if (err.response.status === 422 && Array.isArray(err.response.data.detail)) {
+                    errorMessage = err.response.data.detail
+                        .map((e: any) => e.msg)
+                        .join(", ");
+                } else {
+                    errorMessage = err.response.data?.detail || errorMessage;
+                }
             }
 
-            setError(errorMessage);
+            setError(String(errorMessage)); // Ensure it's always a string
         }
     };
 
