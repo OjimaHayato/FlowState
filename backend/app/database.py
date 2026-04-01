@@ -6,10 +6,12 @@ import os
 # DB Connection URL
 # Docker Composeの環境変数から取得することを想定
 # Default: postgresql://user:password@db/flowstate
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db/flowstate")
+db_url = os.getenv("DATABASE_URL", "postgresql://user:password@db/flowstate")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 # Create SQLAlchemy engine
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(db_url)
 
 # Create SessionLocal class
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
