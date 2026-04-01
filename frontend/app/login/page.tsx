@@ -38,6 +38,12 @@ export default function LoginPage() {
 
     const handleRegister = async () => {
         setError("");
+
+        if (!username || !password) {
+            setError("Username and password are required.");
+            return;
+        }
+
         try {
             console.log("Attempting to register with API URL:", process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
             await api.post("/users/", {
